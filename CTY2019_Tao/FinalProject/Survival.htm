@@ -223,8 +223,6 @@
                 yy = player.y
                 Rx = canvas.width + 27
 
-                console.log(player.health)
-
                 waveChange()
                 gameover = false
                 requestAnimationFrame(nextFrame)
@@ -452,7 +450,6 @@
                     localStorage.setItem("highscore", score);
                 }
             }
-            console.log(gameover)
             if (gameover == false) {
                 requestAnimationFrame(nextFrame)
             }
