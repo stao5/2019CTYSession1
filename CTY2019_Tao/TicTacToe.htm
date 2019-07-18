@@ -50,7 +50,6 @@
             flex-basis: 80%;
             width: 80%;
         }
-
         div.button {
             display: flex;
             background-color: limegreen;
@@ -63,12 +62,22 @@
             font-family: 'Courier New', Courier, monospace;
             border-radius: 0.3em;
             color: white;
+            animation-name: bob;
+            animation-duration: 4s;
+            animation-iteration-count: infinite;
             font-weight: bold;
         }
 
         div.button:hover {
             background-color: rgb(89, 182, 112);
         }
+        @keyframes bob{
+        0%  {background-color: limegreen;}
+        25% {background-color: rgb(19, 228, 158);}
+        50% {background-color: cyan}
+        75% {background-color: rgb(19, 228, 158);}
+        100% {background-color: limegreen;}
+            }
     </style>
 </head>
 
