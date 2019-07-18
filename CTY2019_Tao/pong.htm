@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Rubik+Mono+One&display=swap" rel="stylesheet">
+    <title>Pong</title>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        canvas#ballpen {
+            width: 99.5vw;
+            height: 91vh;
+        }
+
+        div#header {
+            display: flex;
+            padding: 1.2em;
+            background-color: rgb(94, 94, 212);
+            min-height: 8vh;
+            justify-content: space-between;
+        }
+
+        div#header>div {
+            display: flex;
+            color: white;
+            font-size: 2em;
+            font-family: 'Rubik Mono One', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <div id="Player1">
+            Player 1:
+            <div id="player1score">
+                &nbsp;0
+            </div>
+        </div>
+        <div id="Pong">
+            Pong
+        </div>
+        <div id="Player2">
+            Player 2:
+            <div id="player2score">
+                &nbsp;0
+            </div>
+        </div>
+    </div>
+    <canvas id="ballpen">
+    </canvas>
+
+    <script type="text/javascript">
+        let canvas = null;
+        let score1 = 0
+        let score2 = 0
+        let gamewon1 = false
+        let gamewon2 = false
+        let ball = {
+            radius: 15,
+            x: 0, //center x
+            y: 0, //center y
+            velx: 8.25,
+            vely: 8.25,
+            move: function () {
+                this.x = this.x + this.velx
+                this.y = this.y + this.vely
+            }
+        }
+
+        let paddle1 = {
+            height: 200,
+            width: 10,
+            x: 20,
+            y: 0,
+            vely: 5,
+            velx: 0,
+        }
+
+        let paddle2 = {
+            height: 200,
+            width: 10,
+            x: 0,
+            y: 0,
+            vely: 5,
+            velx: 0,
+        }
+
+        let keys = []
+
+        //need to make  one and paddle two as objects
+        function init() {
+            canvas = document.getElementById("ballpen")
+            Player1Score = document.getElementById("player1score")
+            Player2Score = document.getElementById("player2score")
+            tittle = document.getElementById("Pong")
+            canvas.width = canvas.clientWidth
+            canvas.height = canvas.clientHeight
+            ball.x = canvas.width / 2
+            ball.y = canvas.height / 2
+            paddle1.y = canvas.height / 2 - paddle1.height / 2
+            paddle2.x = canvas.clientWidth - 20
+            paddle2.y = canvas.height / 2 - paddle2.height / 2
+            Player1Score.innerHTML = "&nbsp;0"
+            Player2Score.innerHTML = "&nbsp;0"
+            tittle.innerHTML = "Pong"
+            document.addEventListener("keydown", handleKeyDown)
+            document.addEventListener("keyup", handleKeyUp)
+            requestAnimationFrame(nextFrame)
+        }
+
+
+
+        function handleKeyDown(event) {
+            keys[event.keyCode] = true;
+        }
+
+        function handleKeyUp(event) {
+            delete keys[event.keyCode]
+        }
+
+        function doesCollide(circle, rect) {
+            if (circle.x + circle.radius < rect.x) {
+                return false;
+            }
+
+            if (circle.y + circle.radius < rect.y) {
+                return false;
+            }
+
+            if (circle.x - circle.radius > rect.x + rect.width) {
+                return false;
+            }
+
+            if (circle.y - circle.radius > rect.height + rect.y) {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        function RandomDirection() {
+            let x = Math.floor(Math.random() * 4)
+            if (x == 0) {
+                ball.vely = 8.25
+                ball.velx = 8.25
+            } 
+            if (x == 1) {
+                ball.vely *= -1
+            } 
+            if (x == 2) {
+                ball.velx *= -1
+            } 
+            if (x == 3) {
+                ball.velx *= -1
+                ball.vely *= -1
+            }
+        }
+        function CheckWinner(){
+            Player1Score = document.getElementById("player1score")
+            Player2Score = document.getElementById("player2score")
+            tittle = document.getElementById("Pong")
+            if (score1 == 3){
+                gamewon1 = true
+                ball.vely = 0
+                ball.velx = 0
+                tittle.innerHTML = "Player 1 wins! Reload to restart."
+            }
+            if (score2 == 3){
+                gamewon2 = true
+                ball.vely = 0
+                ball.velx = 0
+                tittle.innerHTML = "Player 2 wins! Reload to restart."
+            }
+
+        }
+
+        function nextFrame(time) {
+            let pen = canvas.getContext("2d")
+            Player1Score = document.getElementById("player1score")
+            Player2Score = document.getElementById("player2score")
+            pen.clearRect(0, 0, canvas.width, canvas.height);
+
+            ball.move()
+            if (87 in keys) {
+                if (paddle1.y >= 0) {
+                    paddle1.y -= 10
+                }
+            }
+            if (83 in keys) {
+                if (paddle1.y + paddle1.height <= canvas.height) {
+                    paddle1.y += 10
+                }
+            }
+            if (38 in keys) {
+                if (paddle2.y >= 0) {
+                    paddle2.y -= 10
+                }
+            }
+            if (40 in keys) {
+                if (paddle2.y + paddle2.height <= canvas.height) {
+                    paddle2.y += 10
+                }
+            }
+
+            if (ball.y + ball.radius > canvas.height) {
+                ball.y = canvas.height - ball.radius
+                ball.vely *= -1
+            }
+            if (ball.y - ball.radius < 0) {
+                ball.y = ball.radius
+                ball.vely *= -1
+            }
+            if (ball.x + ball.radius > canvas.width) {
+                score1 = score1 + 1
+                Player1Score.innerHTML = "&nbsp;" + score1
+                ball.x = canvas.width / 2
+                ball.y = canvas.height / 2
+                RandomDirection()
+            }
+            if (ball.x - ball.radius < 0) {
+                score2 = score2 + 1
+                Player2Score.innerHTML = "&nbsp;" + score2
+                ball.x = canvas.width / 2
+                ball.y = canvas.height / 2
+                RandomDirection()
+
+            }
+
+            if (doesCollide(ball, paddle1)) {
+                ball.x = ball.x + ball.radius
+                ball.velx *= -1
+            }
+
+            if (doesCollide(ball, paddle2)) {
+                ball.x = ball.x - ball.radius
+                ball.velx *= -1
+
+            }
+            CheckWinner()
+            pen.beginPath()
+            pen.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI)
+            pen.fillRect(paddle1.x, paddle1.y, paddle1.width, paddle1.height)
+            pen.fillRect(paddle2.x, paddle2.y, paddle2.width, paddle2.height)
+            pen.fill()
+
+
+            if( score1 < 3 && score2 < 3) {
+                requestAnimationFrame(nextFrame)
+            }
+        }
+
+
+
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

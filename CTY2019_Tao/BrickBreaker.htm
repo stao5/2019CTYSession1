@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        canvas#ballpen {
+            width: 99.5vw;
+            height: 91vh;
+        }
+
+        div#header {
+            display: flex;
+            padding: 1.2em;
+            background-color: rgb(94, 212, 206);
+            min-height: 8vh;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        Brick Breaker
+    </div>
+    <canvas id="ballpen">
+    </canvas>
+    <script id="text/javascript">
+        let canvas = null;
+        let keys = []
+        let ball = {
+            radius: 15,
+            x: 0, //center x
+            y: 0, //center y
+            velx: 8.25,
+            vely: 8.25,
+            velx: 5,
+            vely: 5,
+            move: function () {
+                this.x = this.x + this.velx
+                this.y = this.y + this.vely
+            }
+        }
+
+        let paddle = {
+            height: 10,
+            width: 200,
+            x: 0,
+            y: 0,
+            vely: 5,
+            velx: 0,
+        }
+
+        function init() {
+
+            canvas = document.getElementById('ballpen')
+            canvas.width = canvas.clientWidth
+            canvas.height = canvas.clientHeight
+            ball.x = canvas.width / 2
+            ball.y = canvas.height / 2 + 20
+            paddle.x = canvas.width / 2 - paddle.width /2
+            paddle.y = canvas.clientHeight - 10
+            document.addEventListener("keydown", handleKeyDown)
+            document.addEventListener("keyup", handleKeyUp)
+            requestAnimationFrame(nextFrame)
+        }
+
+        function DoesCollide (circle, rect) {
+            if (circle.y + circle.radius < paddle.y){
+                return false
+            }
+            if (circle.x + circle.radius < paddle.x){
+                return false
+            }
+            if (circle.x - circle.radius > paddle.x + paddle.width){
+                return false
+            }
+            return true
+        }
+
+        function handleKeyDown(event) {
+            keys[event.keyCode] = true;
+        }
+
+        function handleKeyUp(event) {
+            delete keys[event.keyCode]
+        }
+        function nextFrame(time) {
+            let pen = canvas.getContext("2d")
+            pen.clearRect(0, 0, canvas.width, canvas.height);
+            ball.move()
+            if (65 in keys) {
+                if (paddle.x >= 0) {
+                    paddle.x -= 10
+                }
+            }
+            if (68 in keys) {
+                if (paddle.x + paddle.width < canvas.clientWidth) {
+                    paddle.x += 10
+                }
+            }
+            
+            if (ball.y - ball.radius < 0) {
+                ball.y = ball.radius
+                ball.vely *= -1
+            }
+
+            if (ball.x + ball.radius > canvas.width) {
+                ball.x = canvas.width - ball.radius
+                ball.velx *= -1
+            }
+            if (ball.x - ball.radius < 0) {
+                ball.x = ball.radius
+                ball.velx *= -1
+            }
+            if (ball.y + ball.radius > canvas.clientHeight){
+                ball.x = canvas.width / 2 
+                ball.y = canvas.height / 2 + 20
+
+            }
+
+            if (DoesCollide(ball, paddle)) {
+                ball.y = ball.y - ball.radius
+                ball.vely *= -1
+            }
+            pen.beginPath()
+            pen.arc(ball.x, ball.y, ball.radius, 0, 2 * Math.PI)
+            pen.fillRect(paddle.x, paddle.y, paddle.width, paddle.height)
+            pen.fillRect(paddle.x, paddle.y, paddle.width, paddle.height)
+            pen.fill()
+                requestAnimationFrame(nextFrame)
+        }
+
+
+
+
+        window.onload = init;
+    </script>
+    </style>
+</body>
+
+</html>

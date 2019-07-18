@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 14;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        div#header {
+            display: flex;
+            min-height: 8vh;
+            padding: 1em;
+            border-bottom: 3px solid black;
+            justify-content: space-between;
+            background-color: green;
+        }
+
+        div#header>div {
+            padding: 0.5rem;
+            font-size: 36px;
+            justify-content: center;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        div#body {
+            display: flex;
+            min-height: 75vh;
+            justify-content: center;
+        }
+
+        div#grid {
+            display: grid;
+            justify-self: center;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            grid-gap: 1em;
+            background-color: white;
+            margin-top: 5em;
+            flex-basis: 80%;
+            width: 80%;
+        }
+
+        div.button {
+            display: flex;
+            background-color: limegreen;
+            min-width: 100%;
+            min-height: 100%;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            font-size: 84px;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 0.3em;
+            color: white;
+            font-weight: bold;
+        }
+
+        div.button:hover {
+            background-color: rgb(89, 182, 112);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <div id="playerx">
+            X Player
+        </div>
+        <div id="gametittle">
+            Tic-Tac-Toe
+        </div>
+        <div id="playery">
+            O Player
+        </div>
+    </div>
+    <div id="body">
+        <div id="grid">
+            <div class="button">
+                &nbsp;
+            </div>
+            <div class="button">
+                &nbsp;
+            </div>
+            <div class="button">
+                &nbsp;
+            </div>
+            <div class="button">
+                &nbsp;
+            </div>
+            <div class="button">
+                &nbsp;
+            </div>
+            <div class="button">
+                &nbsp;
+            </div>
+            <div class="button">
+                &nbsp;
+            </div>
+            <div class="button">
+                &nbsp;
+            </div>
+            <div class="button">
+                &nbsp;
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript">
+        let board = []
+        let turn = 1
+        let gamewonx = false
+        let gamewono = false
+        let tie = false
+
+
+        function init() {
+            let buttons = document.getElementsByClassName("button");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener("click", handleClick);
+                board.push(0)
+            }
+            ResetButton();
+
+            function handleClick(event) {
+                let id = event.target.id;
+                id = parseInt(id);
+                turndisplay();
+                if (board[id] == 0 && ((gamewonx == false) || (gamewono == false))) {
+                    board[id] = turn;
+                    turn *= -1;
+                    console.log(turn)
+                }
+                let winner = CheckWinner()
+                console.log("Winner:", winner)
+                windisplay();
+                UpdateBoard();
+            }
+
+            function turndisplay() {
+                let resetandturn = document.getElementById("gametittle")
+                if (turn == 1) {
+                    gametittle.innerHTML = "X's Turn"
+                } else if (turn == -1) {
+                    gametittle.innerHTML = "O's Turn"
+                }
+
+            }
+            function windisplay(){
+                if (gamewonx == true) {
+                    gametittle.innerHTML = "X Wins! Click to reset."
+                    gametittle.addEventListener("click", ResetButton)
+                } else if (gamewono == true) {
+                    gametittle.innerHTML = "O Wins! Click to reset."
+                    gametittle.addEventListener("click", ResetButton)
+                } else if (tie == true) {
+                    gametittle.innerHTML = "Tie! Click to reset."
+                    gametittle.addEventListener("click", ResetButton)
+                }
+            }
+
+            function ResetButton(event) {
+                let buttons = document.getElementsByClassName("button");
+                let gametittle = document.getElementById("gametittle")
+                gametittle.innerHTML = "Tic-Tac-Toe"
+                for (let i = 0; i < buttons.length; i++) {
+                    buttons[i].innerHTML = "&nbsp;";
+                    buttons[i].id = i;
+                    board[i] = 0;
+                    gamewonx = false;
+                    gamewono = false;
+                    tie = false;
+                }
+            }
+
+            //Return "X", "O", "TIE", ""
+            function CheckWinner() {
+                let buttons = document.getElementsByClassName("button")
+                if (!(board.includes(0))) {
+                    tie = true
+                    return "Tie"
+
+                }
+                for (let row = 0; row < 3; row++) {
+                    let sum = 0
+                    let idx = row * 3
+                    while (idx <= row * 3 + 2) {
+                        sum = sum + board[idx]
+                        idx++
+                    }
+                    if (sum == 3) {
+                        gamewonx = true
+                        return 'X'
+
+                    }
+                    if (sum == -3) {
+
+                        gamewono = true
+                        return 'O'
+                    }
+
+                for (let col = 0; col < 3; col++) {
+                        let colsum = 0
+                        let colidx = col
+                        while (colidx <= col + 6) {
+                            colsum = colsum + board[colidx]
+                            colidx = colidx + 3
+                        }
+                        if (colsum == 3) {
+
+                            gamewonx = true
+                            return 'X'
+
+                        }
+                        if (colsum == -3) {
+
+                            gamewono = true
+                            return 'O'
+                        }
+                    }
+
+                let diagsum = 0;
+                let diagidx = 0;
+                while (diagidx <= 8) {
+                    diagsum = diagsum + board[diagidx]
+                    diagidx = diagidx + 4
+
+                        if (diagsum == 3) {
+
+                            gamewonx = true
+                            return 'X'
+
+                        }
+                        if (diagsum == -3) {
+
+                            gamewono = true
+                            return 'O'
+                        }
+                    }
+                let diagsum_2 = 0
+                let diagidx_2 = 2
+                    while (diagidx_2 <= 6) {
+                        diagsum_2 = diagsum_2 + board[diagidx_2]
+                        diagidx_2 = diagidx_2 + 2
+
+                        if (diagsum_2 == 3) {
+
+                            gamewonx = true
+                            return 'X'
+
+                        }
+                        if (diagsum_2 == -3) {
+
+                            gamewono = true
+                            return 'O'
+                        }
+                    }
+                }
+                return '';
+            }
+
+            //synchronize GUI with logic
+            function UpdateBoard() {
+                let buttons = document.getElementsByClassName("button")
+                for (let j = 0; j < buttons.length; j++) {
+                    if (board[j] == 1) {
+                        buttons[j].innerHTML = "X"
+                    } else if (board[j] == -1) {
+                        buttons[j].innerHTML = "O"
+                    } else if (board[j] == 0) {
+                        buttons[j].innerHTML = "&nbsp;"
+                    }
+
+                }
+            }
+
+
+        }
+        window.onload = init;
+
+        // 0 - Empty space, 1 x, -1 O
+    </script>
+</body>
+
+</html>
