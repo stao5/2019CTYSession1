@@ -142,6 +142,7 @@
             ResetButton();
 
             function handleClick(event) {
+                if (gamewono == false && gamewonx == false){
                 let id = event.target.id;
                 id = parseInt(id);
                 turndisplay();
@@ -154,7 +155,9 @@
                 console.log("Winner:", winner)
                 windisplay();
                 UpdateBoard();
+                }
             }
+
 
             function turndisplay() {
                 let resetandturn = document.getElementById("gametittle")
